@@ -1,12 +1,7 @@
 from selenium import webdriver
-import selenium
 import time
 
-from selenium.webdriver.common.keys import Keys
-
-from getproxy import GetProxy
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.webdriver.common.proxy import Proxy, ProxyType
+from Other.getproxy import GetProxy
 
 "Define Both ProxyHost and ProxyPort as String"
 ProxyHost = "95.47.76.146"
@@ -86,7 +81,7 @@ gp = GetProxy()
 gp.get_proxy()
 
 url = 'https://whatismyipaddress.com/'
-url = 'https://www.twitch.tv/al_twitch_123'
+url = 'https://www.twitch.tv/agantor'
 for proxy in read_proxy():
     driver = None
     try:

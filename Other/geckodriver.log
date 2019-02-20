@@ -1356,3 +1356,10 @@ JavaScript error: resource://gre/modules/WebProgressChild.jsm, line 58: TypeErro
 
 ###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
 
+1550421744222	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\vlad\\AppData\\Local\\Temp\\rust_mozprofile.YC6ZJewpnL24"
+1550421744967	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: resource://pdf.js/
+1550421744967	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid host permission: about:reader*
+1550421746180	Marionette	INFO	Listening on port 56334
+1550421746382	Marionette	WARN	TLS certificate errors will be ignored for this session
+1550421746388	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"1.20.99.63:32123","sslProxy":"1.20.99.63:32123"}
+JavaScript error: , line 0: uncaught exception: undefined

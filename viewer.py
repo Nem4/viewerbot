@@ -19,9 +19,13 @@ import multiprocessing
 import time
 import random
 
-channel_url = "twitch.tv/al_twitch_123"
+channel_url = "twitch.tv/agantor"
+proxies_file = "Proxies_txt/scraped_proxies.txt"
 processes = []
 
+# from Proxy.find_and_save import ProxyFinder
+# pf = ProxyFinder(1000)
+# sys.exit(0)
 
 def get_channel():
     # Reading the channel name - passed as an argument to this script
@@ -36,7 +40,7 @@ def get_channel():
 def get_proxies():
     # Reading the list of proxies
     try:
-        lines = [line.rstrip("\n") for line in open("proxy.txt")]
+        lines = [line.rstrip("\n") for line in open(proxies_file)]
     except IOError as e:
         print("An error has occurred while trying to read the list of proxies: %s" % e.strerror)
         sys.exit(1)
@@ -71,6 +75,7 @@ def get_url():
 
 def open_url(url, proxy):
     # Sending HEAD requests
+    nb_of_tries = 0
     while True:
         try:
             with requests.Session() as s:
@@ -78,9 +83,16 @@ def open_url(url, proxy):
             print("Sent HEAD request with %s" % proxy["http"])
             time.sleep(20)
         except requests.exceptions.Timeout:
+            nb_of_tries += 1
             print("  Timeout error for %s" % proxy["http"])
+            if nb_of_tries > 2:
+                print("################### Closing this thread! ################### ")
+                break
         except requests.exceptions.ConnectionError:
+            nb_of_tries += 1
             print("  Connection error for %s" % proxy["http"])
+            if nb_of_tries > 2:
+                break
 
 
 def prepare_processes():
@@ -118,7 +130,7 @@ if __name__ == "__main__":
 
     # Starting up the processes
     for process in processes:
-        time.sleep(random.randint(1, 5) * n)
+        time.sleep(random.randint(1, 4) * n)
         process.daemon = True
         process.start()
         if n > 1:
