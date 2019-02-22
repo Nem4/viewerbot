@@ -23,9 +23,9 @@ channel_url = "twitch.tv/agantor"
 proxies_file = "Proxies_txt/scraped_proxies.txt"
 processes = []
 
-# from Proxy.find_and_save import ProxyFinder
-# pf = ProxyFinder(1000)
-# sys.exit(0)
+from Proxy.find_and_save import ProxyFinder
+pf = ProxyFinder()
+sys.exit(0)
 
 def get_channel():
     # Reading the channel name - passed as an argument to this script
@@ -80,18 +80,18 @@ def open_url(url, proxy):
         try:
             with requests.Session() as s:
                 response = s.head(url, proxies=proxy)
-            print("Sent HEAD request with %s" % proxy["http"])
+            print(f"Sent HEAD request with {proxy['http']} | {response.content} | {response.text}")
             time.sleep(20)
         except requests.exceptions.Timeout:
             nb_of_tries += 1
             print("  Timeout error for %s" % proxy["http"])
-            if nb_of_tries > 2:
+            if nb_of_tries > 3:
                 print("################### Closing this thread! ################### ")
                 break
         except requests.exceptions.ConnectionError:
             nb_of_tries += 1
             print("  Connection error for %s" % proxy["http"])
-            if nb_of_tries > 2:
+            if nb_of_tries > 3:
                 break
 
 
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     # Starting up the processes
     for process in processes:
-        time.sleep(random.randint(1, 4) * n)
+        time.sleep(random.randint(1, 2) * n)
         process.daemon = True
         process.start()
         if n > 1:

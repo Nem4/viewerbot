@@ -5,7 +5,7 @@ from Proxy.proxybroker import Broker
 # from proxybroker import Broker
 
 class ProxyFinder():
-    def __init__(self, nb_of_proxies):
+    def __init__(self, nb_of_proxies = None):
         self.nb_of_proxies = nb_of_proxies
         self.main()
 
@@ -24,8 +24,15 @@ class ProxyFinder():
     def main(self):
         proxies = asyncio.Queue()
         broker = Broker(proxies)
-        tasks = asyncio.gather(broker.find(types=['HTTP', 'HTTPS', 'SOCKS5'], limit=self.nb_of_proxies),
+        if self.nb_of_proxies == None:
+            tasks = asyncio.gather(broker.find(types=['HTTP', 'HTTPS', 'SOCKS5']),
                                self.save(proxies, filename='Proxies_txt/scraped_proxies.txt'))
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(tasks)
-
+        else:
+            tasks = asyncio.gather(broker.find(types=['HTTP', 'HTTPS', 'SOCKS5'], limit=self.nb_of_proxies),
+                                   self.save(proxies, filename='Proxies_txt/scraped_proxies.txt'))
+        try:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(tasks)
+        except:
+            import sys
+            print(str(sys.exc_info()))

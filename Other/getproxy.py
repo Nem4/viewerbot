@@ -105,7 +105,7 @@ class GetProxy():
         return random.randint(0, len(self.proxies) - 1)
 
     def save_proxy(self, proxy_host, proxy_port):
-        proxys = open("proxy_list.txt", "a+")
+        proxys = open("good_list.txt", "a+")
         proxys.write(f"{proxy_host}:{proxy_port}" + '\n')
 
 
