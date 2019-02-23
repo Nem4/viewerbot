@@ -23,9 +23,9 @@ channel_url = "twitch.tv/agantor"
 proxies_file = "Proxies_txt/good_proxy.txt"
 processes = []
 
-# from Proxy.find_and_save import ProxyFinder
-# pf = ProxyFinder(2000)
-# sys.exit(0)
+from Proxy.find_and_save import ProxyFinder
+pf = ProxyFinder(2000)
+sys.exit(0)
 
 def get_channel():
     # Reading the channel name - passed as an argument to this script
@@ -73,15 +73,16 @@ def get_url():
     return url
 
 
-def open_url(url, proxy):
+def open_url( proxy):
     # Sending HEAD requests
     nb_of_tries = 0
-    time.sleep(random.randint(1, 4))
+    url = get_url()
+    # time.sleep(random.randint(4, 15))
     while True:
         try:
             with requests.Session() as s:
                 response = s.head(url, proxies=proxy)
-            print(f"Sent HEAD request with {proxy['http']} | {response.content} | {response.text}")
+            print(f"Sent HEAD request with {proxy['http']} | {response.content} | {response.text} | {response}")
             time.sleep(20)
         except requests.exceptions.Timeout:
             nb_of_tries += 1
@@ -93,6 +94,7 @@ def open_url(url, proxy):
             nb_of_tries += 1
             print("  Connection error for %s" % proxy["http"])
             if nb_of_tries > 3:
+                print("################### Closing this thread! ################### ")
                 break
 
 
@@ -103,13 +105,13 @@ def prepare_processes():
     if len(proxies) < 1:
         print("An error has occurred while preparing the process: Not enough proxy servers. Need at least 1 to function.")
         sys.exit(1)
-    url = get_url()
+
     for proxy in proxies:
         # Preparing the process and giving it its own proxy
         processes.append(
             multiprocessing.Process(
                 target=open_url, kwargs={
-                    "url": url, "proxy": {
+                    "proxy": {
                         "http": proxy}}))
 
         print('.')
@@ -130,7 +132,7 @@ if __name__ == "__main__":
 
     # Starting up the processes
     for process in processes:
-        # time.sleep(random.randint(1, 2) * n)
+        time.sleep(random.randint(1, 2) * n)
         process.daemon = True
         process.start()
         if n > 1:
