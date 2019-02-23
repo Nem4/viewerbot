@@ -20,12 +20,12 @@ import time
 import random
 
 channel_url = "twitch.tv/agantor"
-proxies_file = "Proxies_txt/scraped_proxies.txt"
+proxies_file = "Proxies_txt/good_proxy.txt"
 processes = []
 
-from Proxy.find_and_save import ProxyFinder
-pf = ProxyFinder()
-sys.exit(0)
+# from Proxy.find_and_save import ProxyFinder
+# pf = ProxyFinder(2000)
+# sys.exit(0)
 
 def get_channel():
     # Reading the channel name - passed as an argument to this script
@@ -76,6 +76,7 @@ def get_url():
 def open_url(url, proxy):
     # Sending HEAD requests
     nb_of_tries = 0
+    time.sleep(random.randint(1, 4))
     while True:
         try:
             with requests.Session() as s:
@@ -98,18 +99,17 @@ def open_url(url, proxy):
 def prepare_processes():
     global processes
     proxies = get_proxies()
-    n = 0
 
     if len(proxies) < 1:
         print("An error has occurred while preparing the process: Not enough proxy servers. Need at least 1 to function.")
         sys.exit(1)
-
+    url = get_url()
     for proxy in proxies:
         # Preparing the process and giving it its own proxy
         processes.append(
             multiprocessing.Process(
                 target=open_url, kwargs={
-                    "url": get_url(), "proxy": {
+                    "url": url, "proxy": {
                         "http": proxy}}))
 
         print('.')
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     # Starting up the processes
     for process in processes:
-        time.sleep(random.randint(1, 2) * n)
+        # time.sleep(random.randint(1, 2) * n)
         process.daemon = True
         process.start()
         if n > 1:
