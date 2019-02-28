@@ -23,12 +23,12 @@ from fake_useragent import UserAgent
 
 channel_url = "twitch.tv/agantor"
 # channel_url = "https://www.twitch.tv/mgberg"
-channel_url = "twitch.tv/piggyesgames"
-channel_url = "https://www.twitch.tv/spirit_stan"
-channel_url = "https://www.twitch.tv/comboedow"
+# channel_url = "twitch.tv/piggyesgames"
+# channel_url = "https://www.twitch.tv/spirit_stan"
+channel_url = "https://www.twitch.tv/" + sys.argv[1]
 proxies_file = "Proxies_txt/good_proxy.txt"
 processes = []
-max_viewers = 1000
+max_viewers = 500
 # all_processes = []
 nb_of_proxies = 0
 ua = UserAgent()

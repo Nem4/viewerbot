@@ -239,6 +239,7 @@ class Server:
                 await writer.drain()
         except (asyncio.TimeoutError, ConnectionResetError, OSError,
                 ProxyRecvError, BadStatusError, BadResponseError) as e:
+            print("Here error")
             raise ErrorOnStream(e)
 
     def _check_response(self, data, scheme):
