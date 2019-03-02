@@ -26,9 +26,10 @@ channel_url = "twitch.tv/agantor"
 # channel_url = "twitch.tv/piggyesgames"
 # channel_url = "https://www.twitch.tv/spirit_stan"
 channel_url = "https://www.twitch.tv/" + sys.argv[1]
+# channel_url = "https://www.twitch.tv/neomusician"
 proxies_file = "Proxies_txt/good_proxy.txt"
 processes = []
-max_viewers = 500
+max_viewers = 1000
 # all_processes = []
 nb_of_proxies = 0
 ua = UserAgent()
@@ -84,7 +85,9 @@ def get_url():
     return url
 
 
-def open_url(proxy, all_proxies):
+def open_url(all_proxies):
+    time.sleep(random.randint(100, 15000)/100)
+    start_time = time.time()
     # Sending HEAD requests
     shuffle(all_proxies)
     nb_of_tries = 0
@@ -93,16 +96,26 @@ def open_url(proxy, all_proxies):
     max_proxy_failure = 20
     # url = get_url()
     # time.sleep(random.randint(4, 15))
-    current_proxy = proxy
+    current_proxy = {"http": all_proxies[0]}
+    headers = {
+        'User-Agent': ua.random
+    }
+    s = requests.Session()
     while True:
-        headers = {
-            'User-Agent': ua.random
-        }
         try:
-            with requests.Session() as s:
-                response = s.head(url, proxies=current_proxy, headers=headers)
+            # if time.time() - start_time > 180:
+            #     start_time = time.time()
+            #     print("################### CHANGING PROXY ################### ")
+            #     current_proxy = {"http": all_proxies[0]}
+            #     headers = {
+            #         'User-Agent': ua.random
+            #     }
+            #     s = requests.Session()
+
+            # with requests.Session() as s:
+            response = s.head(url, proxies=current_proxy, headers=headers)
             print(f"Sent HEAD request with {current_proxy['http']} | {response.status_code} | {response.request} | {response}")
-            if response.status_code == 503:
+            if response.status_code != 200:
                 nb_of_tries += 1
                 # print("  SERVICE UNAVAILABLE %s" % proxy["http"])
                 if nb_of_tries > 1:
@@ -112,8 +125,13 @@ def open_url(proxy, all_proxies):
                     else:
                         print("################### CHANGING PROXY ################### ")
                         current_proxy = {"http": all_proxies[0]}
+                        headers = {
+                            'User-Agent': ua.random
+                        }
+                        s = requests.Session()
+                        url = get_url()
                         nb_of_proxies_failures += 1
-            time.sleep(20)
+            time.sleep(random.randint(15,20))
         except requests.exceptions.Timeout:
             nb_of_tries += 1
             print("  Timeout error for %s" % current_proxy["http"])
@@ -124,6 +142,11 @@ def open_url(proxy, all_proxies):
                 else:
                     print("################### CHANGING PROXY ################### ")
                     current_proxy = {"http": all_proxies[0]}
+                    headers = {
+                        'User-Agent': ua.random
+                    }
+                    s = requests.Session()
+                    url = get_url()
                     nb_of_proxies_failures += 1
         except requests.exceptions.ConnectionError:
             nb_of_tries += 1
@@ -135,6 +158,7 @@ def open_url(proxy, all_proxies):
                 else:
                     print("################### CHANGING PROXY ################### ")
                     current_proxy = {"http": all_proxies[0]}
+                    url = get_url()
                     nb_of_proxies_failures += 1
 
 
@@ -147,8 +171,8 @@ def prepare_processes():
         sys.exit(1)
 
     n = 0
-    for proxy in proxies:
-        if n<max_viewers:
+    for n in range(0, max_viewers):
+        # if n<max_viewers:
             # Preparing the process and giving it its own proxy
             # processes.append(
             #     multiprocessing.Process(
@@ -156,16 +180,14 @@ def prepare_processes():
             #             "proxy": {
             #                 "http": proxy}}))
             p = multiprocessing.Process(
-                    target=open_url, kwargs={"all_proxies": proxies,
-                                             "proxy": {
-                                                 "http": proxy}})
+                    target=open_url, kwargs={"all_proxies": proxies})
             p.daemon = True
             p.start()
 
-            n += 1
+            # n += 1
             print(f'Prepearing # {n} of {len(proxies)}')
-        else:
-            break
+        # else:
+        #     break
     print(f"Max viewers: {len(proxies)}")
     print('')
 
