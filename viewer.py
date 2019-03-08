@@ -12,7 +12,8 @@ limitations under the License.
 '''
 
 import requests
-from streamlink import Streamlink
+# from streamlink import Streamlink
+from livestreamer import Livestreamer
 import sys
 import multiprocessing
 import time
@@ -31,7 +32,8 @@ max_viewers = 500
 # all_processes = []
 nb_of_proxies = 0
 ua = UserAgent()
-session = Streamlink()
+session = Livestreamer()
+session.set_option("http-headers", {'User-Agent': ua.random, "Client-ID": "ewvlchtxgqq88ru9gmfp1gmyt6h2b93"})
 # from Proxy.find_and_save import ProxyFinder
 # pf = ProxyFinder(2000)
 # sys.exit(0)
@@ -65,9 +67,10 @@ def get_url():
     url = ""
     try:
         streams = session.streams(channel_url)
-        url = streams['audio_only']
+        # print("********************STREAMS: " + str(streams))
+        url = streams['audio_only'].url
     except:
-        print("Wasnt able to get url")
+        print("Wasnt able to get url" + str(sys.exc_info()))
     return url
 
 
