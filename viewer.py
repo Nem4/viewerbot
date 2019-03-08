@@ -12,8 +12,7 @@ limitations under the License.
 '''
 
 import requests
-import subprocess
-import json
+from streamlink import Streamlink
 import sys
 import multiprocessing
 import time
@@ -25,16 +24,18 @@ channel_url = "twitch.tv/agantor"
 # channel_url = "https://www.twitch.tv/mgberg"
 # channel_url = "twitch.tv/piggyesgames"
 # channel_url = "https://www.twitch.tv/spirit_stan"
-# channel_url = "https://www.twitch.tv/" + sys.argv[1]
+
 proxies_file = "Proxies_txt/good_proxy.txt"
 processes = []
 max_viewers = 500
 # all_processes = []
 nb_of_proxies = 0
 ua = UserAgent()
+session = Streamlink()
 # from Proxy.find_and_save import ProxyFinder
 # pf = ProxyFinder(2000)
 # sys.exit(0)
+channel_url = "https://www.twitch.tv/" + sys.argv[1]
 
 def get_channel():
     # Reading the channel name - passed as an argument to this script
@@ -59,28 +60,14 @@ def get_proxies():
     return lines
 
 
+
 def get_url():
-    # Getting the json with all data regarding the stream
+    url = ""
     try:
-        response = subprocess.Popen(
-            ["livestreamer.exe", "--http-header", "Client-ID=ewvlchtxgqq88ru9gmfp1gmyt6h2b93",
-            channel_url, "-j"], stdout=subprocess.PIPE).communicate()[0]
-    except subprocess.CalledProcessError:
-        print("An error has occurred while trying to get the stream data. Is the channel online? Is the channel name correct?")
-        sys.exit(1)
-    except OSError:
-        print("An error has occurred while trying to use livestreamer package. Is it installed? Do you have Python in your PATH variable?")
-
-    # Decoding the url to the worst quality of the stream
-    try:
-        url = json.loads(response)['streams']['audio_only']['url']
+        streams = session.streams(channel_url)
+        url = streams['audio_only']
     except:
-        try:
-            url = json.loads(response)['streams']['worst']['url']
-        except (ValueError, KeyError):
-            print("An error has occurred while trying to get the stream data. Is the channel online? Is the channel name correct?")
-            sys.exit(1)
-
+        print("Wasnt able to get url")
     return url
 
 
@@ -90,14 +77,13 @@ def open_url(proxy, all_proxies):
     nb_of_tries = 0
     nb_of_proxies_failures = 0
     url = get_url()
-    max_proxy_failure = 20
+    max_proxy_failure = 5
     # url = get_url()
     # time.sleep(random.randint(4, 15))
     current_proxy = proxy
+    
+    headers = {'User-Agent': ua.random}
     while True:
-        headers = {
-            'User-Agent': ua.random
-        }
         try:
             with requests.Session() as s:
                 response = s.head(url, proxies=current_proxy, headers=headers)
@@ -112,8 +98,10 @@ def open_url(proxy, all_proxies):
                     else:
                         print("################### CHANGING PROXY ################### ")
                         current_proxy = {"http": all_proxies[random.randint(1, len(all_proxies))]}
+                        url = get_url()
+                        headers = {'User-Agent': ua.random}
                         nb_of_proxies_failures += 1
-            time.sleep(20)
+            time.sleep(random.randint(4, 15))
         except requests.exceptions.Timeout:
             nb_of_tries += 1
             print("  Timeout error for %s" % current_proxy["http"])
@@ -124,6 +112,8 @@ def open_url(proxy, all_proxies):
                 else:
                     print("################### CHANGING PROXY ################### ")
                     current_proxy = {"http": all_proxies[random.randint(1, len(all_proxies))]}
+                    url = get_url()
+                    headers = {'User-Agent': ua.random}
                     nb_of_proxies_failures += 1
         except requests.exceptions.ConnectionError:
             nb_of_tries += 1
@@ -135,6 +125,8 @@ def open_url(proxy, all_proxies):
                 else:
                     print("################### CHANGING PROXY ################### ")
                     current_proxy = {"http": all_proxies[random.randint(1, len(all_proxies))]}
+                    url = get_url()
+                    headers = {'User-Agent': ua.random}
                     nb_of_proxies_failures += 1
 
 
