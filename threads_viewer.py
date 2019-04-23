@@ -97,7 +97,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         channel_url = "https://www.twitch.tv/" + sys.argv[1]
     else:
-        channel_url = "https://www.twitch.tv/agantor"
+        channel_url = "https://www.twitch.tv/your_channel_name"
     start_time = time.time()
     proxies = get_proxies()
     
