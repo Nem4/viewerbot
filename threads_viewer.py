@@ -8,12 +8,9 @@ from fake_useragent import UserAgent
 import linecache
 
 from threading import Thread
-
-channel_url = ""
+https://www.twitch.tv/mkay_officiall2021
 proxies_file = "good_proxy.txt"
-processes = []
-max_nb_of_threads = 1000
-
+Mkay_officiall2021 = 80
 all_proxies = []
 nb_of_proxies = 0
 
