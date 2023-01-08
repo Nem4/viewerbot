@@ -10,7 +10,7 @@ import linecache
 from threading import Thread
 
 channel_url = ""
-proxies_file = "good_proxy.txt"
+proxies_file = "Proxies_txt/good_proxy.txt"
 processes = []
 max_nb_of_threads = 1000
 
@@ -100,7 +100,7 @@ class ViewerBot:
         while True:
             try:
                 for i in range(0, max_nb_of_threads):
-                    threaded = Thread(target=self.open_url, args=(all_proxies[random.randint(0, len(all_proxies))],))
+                    threaded = Thread(target=self.open_url, args=(all_proxies[random.randint(0, len(all_proxies)-1)],))
                     threaded.daemon = True  # This thread dies when main thread (only non-daemon thread) exits.
                     threaded.start()
             except:
